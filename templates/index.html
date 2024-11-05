@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voting App</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .vote-option {
+            cursor: pointer;
+            width: 200px;
+            height: 200px;
+            margin: 10px;
+            object-fit: cover; /* Ensures the image covers the area without distortion */
+        }
+        .vote-container {
+            display: flex;
+            justify-content: center;
+        }
+        .results-container {
+            width: 80%;
+            margin-top: 20px;
+        }
+        .bar {
+            display: flex;
+            height: 30px;
+            margin: 10px 0;
+            color: white;
+            text-align: center;
+            line-height: 30px;
+        }
+        .bar-option1 {
+            background-color: red;
+        }
+        .bar-option2 {
+            background-color: blue;
+        }
+    </style>
+</head>
+<body>
+    <button onclick="clearVote()">Clear Vote</button>
+    <h1>Who will win?</h1>
+    {% if not user_vote %}
+    <form id="voteForm" method="POST">
+        <input type="hidden" name="vote" id="voteInput">
+        <div class="vote-container">
+            <img src="{{ url_for('static', filename='option1.png') }}" alt="Option 1" class="vote-option" onclick="castVote('Option 1')">
+            <img src="{{ url_for('static', filename='option2.png') }}" alt="Option 2" class="vote-option" onclick="castVote('Option 2')">
+        </div>
+    </form>
+    {% else %}
+    <div class="vote-container">
+        {% if user_vote == 'Option 1' %}
+        <img src="{{ url_for('static', filename='option1.png') }}" alt="Option 1" class="vote-option">
+        {% elif user_vote == 'Option 2' %}
+        <img src="{{ url_for('static', filename='option2.png') }}" alt="Option 2" class="vote-option">
+        {% endif %}
+    </div>
+    {% endif %}
+    <h2>Results:</h2>
+    <div class="results-container">
+        <div class="bar">
+            <div class="bar-option1" style="width: {{ (votes['Option 1'] / (votes['Option 1'] + votes['Option 2']) * 100) | round(2) if (votes['Option 1'] + votes['Option 2']) > 0 else 0 }}%">
+                {{ (votes['Option 1'] / (votes['Option 1'] + votes['Option 2']) * 100) | round(2) if (votes['Option 1'] + votes['Option 2']) > 0 else 0 }}%
+            </div>
+            <div class="bar-option2" style="width: {{ (votes['Option 2'] / (votes['Option 1'] + votes['Option 2']) * 100) | round(2) if (votes['Option 1'] + votes['Option 2']) > 0 else 0 }}%">
+                {{ (votes['Option 2'] / (votes['Option 1'] + votes['Option 2']) * 100) | round(2) if (votes['Option 1'] + votes['Option 2']) > 0 else 0 }}%
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function castVote(option) {
+            document.getElementById('voteInput').value = option;
+            document.getElementById('voteForm').submit();
+        }
+
+        function clearVote() {
+            document.cookie = "user_vote=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            location.reload();
+        }
+    </script>
+</body>
+</html>
