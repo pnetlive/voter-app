@@ -46,7 +46,6 @@
     </style>
 </head>
 <body>
-    <button onclick="clearVote()">Clear Vote</button>
     <h1>Who will win?</h1>
     {% if not user_vote %}
     <form id="voteForm" method="POST">
@@ -81,11 +80,6 @@
         function castVote(option) {
             document.getElementById('voteInput').value = option;
             document.getElementById('voteForm').submit();
-        }
-
-        function clearVote() {
-            document.cookie = "user_vote=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-            location.reload();
         }
     </script>
 </body>
