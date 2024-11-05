@@ -22,6 +22,9 @@ def write_votes():
         for option, count in votes.items():
             file.write(f'{option}:{count}\n')
 
+def get_total_votes():
+    return sum(votes.values())
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     user_vote = request.cookies.get('user_vote')
@@ -34,7 +37,19 @@ def index():
             resp = make_response(redirect(url_for('index')))
             resp.set_cookie('user_vote', option)
             return resp
-    return render_template('index.html', votes=votes, user_vote=user_vote)
+    total_votes = get_total_votes()
+    return render_template('index.html', votes=votes, user_vote=user_vote, total_votes=total_votes)
+
+@app.route('/clear_vote')
+def clear_vote():
+    # Reset the votes
+    global votes
+    votes = {"Option 1": 0, "Option 2": 0}
+    write_votes()
+    # Clear the cookie
+    resp = make_response(redirect(url_for('index')))
+    resp.set_cookie('user_vote', '', expires=0)
+    return resp
 
 if __name__ == '__main__':
     app.run(debug=True)
